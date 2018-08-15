@@ -1,0 +1,3 @@
+[submodule "fpinscala"]
+	path = fpinscala
+	url = https://github.com/fpinscala/fpinscala.git
