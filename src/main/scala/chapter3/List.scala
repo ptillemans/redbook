@@ -1,3 +1,5 @@
+package chapter3
+
 sealed trait List[+A]
 case object Nil extends List[Nothing]
 case class Cons[+A](head:A, tail: List[A]) extends List[A]
@@ -109,7 +111,50 @@ object List {
   def flatMap[A,B](as: List[A])(f: A => List[B]) : List[B] =
     foldLeft(as, Nil:List[B])((bs, a) => append(bs, f(a)))
 
+  // Exercise 3.21
+  def filter2[A](as: List[A])(f: A => Boolean) : List[A] =
+    flatMap(as)(a => if (f(a)) List(a) else Nil)
 
+  // Exercise 3.22
+  def listAdd(as: List[Int], bs: List[Int]): List[Int] =
+    as match {
+      case Nil => Nil
+      case Cons(a, as) => bs match {
+        case Nil => Nil
+        case Cons(b, bs) => Cons(a + b, listAdd(as, bs) )
+      }
+    }
+
+  // Exercise 3.23
+  def zipWith[A,B](as: List[A], bs: List[A])(f: (A, A) => B): List[B] =
+    as match {
+      case Nil => Nil
+      case Cons(a, as) => bs match {
+        case Nil => Nil
+        case Cons(b, bs) => Cons(f(a, b), zipWith(as, bs)(f))
+      }
+    }
+
+  // Exercise 3.24
+  def subSequences[A](as: List[A]): List[List[A]] =
+    as match {
+      case Nil => Nil
+      case Cons(_, xs) => Cons(as, subSequences(xs))
+    }
+
+  // Exercise 3.25
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    val startsWith: (List[A], List[A]) => Boolean =
+      (as, bs) => foldLeft(zipWith(as, bs)(_ == _), true)(_ & _)
+    def any(bs: List[Boolean]): Boolean =
+      bs match {
+        case Nil => false
+        case Cons(b, bs) => b | any(bs)
+      }
+    val subLen = length(sub);
+    val subSeqs = List.filter(subSequences(sup))(xs => List.length(xs) >= subLen)
+    any(map(subSeqs)(xs => startsWith(xs, sub)))
+  }
 }
 
 
@@ -179,6 +224,21 @@ object Chapter3 {
     List.forEach(flat)(x => print(" %s".format(x)))
     println()
 
+    val filtered2 = List.filter2(x)(odd)
+    println("filter2(x)")
+    List.forEach(filtered2)(x => print(" %s".format(x)))
+    println()
+
+    val listAdd  = List.listAdd(x, z)
+    println("listAdd(x)")
+    List.forEach(listAdd)(x => print(" %s".format(x)))
+    println()
+
+    val sub: (Int, Int) => Int = (a, b) => a - b
+    val zipwith = List.zipWith(x, y)(sub)
+    println("zipWith(x, y)")
+    List.forEach(zipwith)(x => print(" %d".format(x)))
+    println()
   }
 
 

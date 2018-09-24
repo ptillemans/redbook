@@ -2,3 +2,4 @@
 *.class
 target
 .ensime_cache
+/.sbt-hydra-history
