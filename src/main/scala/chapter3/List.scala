@@ -95,7 +95,23 @@ object List {
   def map[A,B](as: List[A])(f: A => B) : List[B] =
     foldLeft(as, Nil:List[B])((bs, a) => Cons(f(a), bs))
 
+  // Exercise 3.19
+  def filter[A](as: List[A])(f: A => Boolean) : List[A] =
+    foldRight(as, Nil:List[A])(
+      (a, bs) => if (f(a)) {
+        Cons(a, bs)
+      } else {
+        bs
+      })
+
+
+  // Exercise 3.20
+  def flatMap[A,B](as: List[A])(f: A => List[B]) : List[B] =
+    foldLeft(as, Nil:List[B])((bs, a) => append(bs, f(a)))
+
+
 }
+
 
 object Chapter3 {
 
@@ -151,6 +167,18 @@ object Chapter3 {
     println("map(x)")
     List.forEach(map)(x => print(" %s".format(x)))
     println()
+
+    val odd: Int => Boolean = (x => x % 2 == 1)
+    val filtered = List.filter(x)(odd)
+    println("filter(x)")
+    List.forEach(filtered)(x => print(" %s".format(x)))
+    println()
+
+    val multiples: Int => List[Int] = x => List(x, 2*x, 3*x)
+    val flat = List.flatMap(x)(multiples)
+    List.forEach(flat)(x => print(" %s".format(x)))
+    println()
+
   }
 
 
